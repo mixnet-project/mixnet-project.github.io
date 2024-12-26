@@ -62,31 +62,68 @@ const createChart = (data) => {
     type: "line",
     data: {
       labels: rates,
-      datasets: datasets,
+      datasets: datasets.map(dataset => ({
+        ...dataset,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.3,
+      })),
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Rate (Gbps)",
-          },
-        },
-        y: {
-          title: {
-            display: true,
-            text: "Performance/Cost",
-          },
-        },
-      },
       plugins: {
+        legend: {
+          position: 'top',
+          padding: 20,
+          labels: {
+            usePointStyle: true,
+            padding: 15,
+            font: {
+              family: 'var(--body-font)',
+              size: 13,
+            },
+            generateLabels: (chart) => {
+              const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+              return labels.map(label => ({
+                ...label,
+                lineWidth: 1,
+                strokeStyle: networkColors[label.text],
+                fillStyle: networkColors[label.text],
+              }));
+            }
+          }
+        },
         title: {
           display: true,
-          text: "Performance/Cost vs Rate",
+          text: 'Performance/Cost vs Rate',
+          padding: {
+            top: 10,
+            bottom: 20
+          },
+          font: {
+            family: 'var(--heading-font)',
+            size: 16,
+            weight: '600'
+          }
         },
         tooltip: {
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          titleColor: '#2c3e50',
+          bodyColor: '#2c3e50',
+          borderColor: '#e4e7ed',
+          borderWidth: 1,
+          padding: 10,
+          bodyFont: {
+            family: 'var(--body-font)',
+            size: 13
+          },
+          titleFont: {
+            family: 'var(--heading-font)',
+            size: 14,
+            weight: '600'
+          },
           callbacks: {
             label: (context) => {
               return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
@@ -94,6 +131,42 @@ const createChart = (data) => {
           },
         },
       },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Rate (Gbps)",
+            padding: { top: 10 },
+            font: {
+              family: 'var(--body-font)',
+              size: 13,
+              weight: '500'
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)',
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Performance/Cost",
+            padding: { bottom: 10 },
+            font: {
+              family: 'var(--body-font)',
+              size: 13,
+              weight: '500'
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)',
+          }
+        },
+      },
+      animation: {
+        duration: 750,
+        easing: 'easeOutQuart'
+      }
     },
   });
 };
