@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <script>
+    const path = window.location.pathname;
+    const repo = '/website';
+    if (path.startsWith(repo) && path !== repo + '/') {
+      window.location.href = repo + '/#' + path.slice(repo.length);
+    }
+  </script>
+</head>
+<body>
+  Redirecting...
+</body>
+</html> 
