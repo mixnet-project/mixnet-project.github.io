@@ -1,61 +1,50 @@
 <template>
   <div class="home">
-    <h1>Performance/Cost Calculator</h1>
-    <h2>Reconfigurable optical interconnects</h2>
+    <h1>MixNet: Reconfigurable Optical-Electrical Fabric for MoE Training</h1>
 
     <div class="content">
       <section class="intro">
         <h3>About the Project</h3>
         <p>
-          This calculator is designed to analyze and compare different network interconnect architectures 
-          for high-performance computing systems. It helps evaluate the trade-offs between performance 
-          and cost across various network topologies including Fat-tree, Rail-optimized, Rail-only, 
-          TopoOpt, and MixNet.
-        </p>
-        <p>
-          Key metrics include:
-          <ul>
-            <li>Network cost analysis across different bandwidths (40G-400G)</li>
-            <li>Performance/cost ratio comparison</li>
-            <li>Scalability analysis for different cluster sizes</li>
-          </ul>
+          MixNet is a network architecture that uses reconfigurable optical interconnects with existing electrical network to achieve high-speed, low-cost and scalable  network connectivity for large-scale Mixture-of-Experts (MoE) training systems.
         </p>
       </section>
 
       <section class="features">
-        <h3>Features</h3>
+        <h3>Cost-Performance Analysis</h3>
         <ul>
           <li>Compare different network architectures</li>
           <li>Analyze performance/cost ratios</li>
           <li>Visualize results with interactive charts</li>
           <li>Export calculation results</li>
         </ul>
+        <el-button type="primary" @click="goToCalculator">
+          Launch Calculator
+        </el-button>
       </section>
 
       <section class="get-started">
         <h3>Get Started</h3>
-        <el-button type="primary" @click="goToCalculator">
-          Launch Calculator
-        </el-button>
         <el-button type="info" @click="goToGithub">
           View on GitHub
         </el-button>
       </section>
 
-      <section class="code-info">
+      <!-- <section class="code-info">
         <h3>Project Information</h3>
         <p>
           <strong>Version:</strong> 1.0.0<br>
           <strong>Repository:</strong> <a href="https://github.com/yourusername/project">GitHub Repository</a><br>
           <strong>License:</strong> MIT
         </p>
-      </section>
+      </section> -->
     </div>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 
@@ -64,7 +53,12 @@ const goToCalculator = () => {
 }
 
 const goToGithub = () => {
-  window.open('https://github.com/yourusername/project', '_blank')
+  ElMessage({
+    message: 'Code will be available on the time of publication.',
+    type: 'info',
+    duration: 3000,
+    showClose: true
+  })
 }
 </script>
 

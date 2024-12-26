@@ -1,44 +1,58 @@
 <template>
-  <div class="container">
-    <h1>Performance/Cost Calculator - Reconfigurable optical interconnects</h1>
-    
-    <!-- Cluster Scale Input -->
-    <ClusterScale @update:data="updateClusterData" />
-    
-    <!-- Performance Data Input -->
-    <PerformanceTable @update:data="updatePerformanceData" />
-    
-    <!-- Cost Data Input -->
-    <CostTable @update:data="updateCostData" />
-    
-    <!-- Action Buttons -->
-    <div class="button-container">
-      <el-button 
-        type="primary" 
-        :loading="calculating"
-        @click="calculateResults"
-      >
-        {{ calculating ? 'Calculating...' : 'Calculate Networking Cost' }}
-      </el-button>
-      <el-button 
-        type="success" 
-        :disabled="!results"
-        @click="exportResults"
-      >
-        Export Results
-      </el-button>
+  <div>
+    <el-menu 
+      :router="true" 
+      mode="horizontal" 
+      class="nav-menu"
+    >
+      <el-menu-item index="/">
+        <el-icon><ArrowLeft /></el-icon>
+        Back to Home
+      </el-menu-item>
+    </el-menu>
+
+    <div class="container">
+      <h1>Performance/Cost Calculator - Reconfigurable optical interconnects</h1>
+      
+      <!-- Cluster Scale Input -->
+      <ClusterScale @update:data="updateClusterData" />
+      
+      <!-- Performance Data Input -->
+      <PerformanceTable @update:data="updatePerformanceData" />
+      
+      <!-- Cost Data Input -->
+      <CostTable @update:data="updateCostData" />
+      
+      <!-- Action Buttons -->
+      <div class="button-container">
+        <el-button 
+          type="primary" 
+          :loading="calculating"
+          @click="calculateResults"
+        >
+          {{ calculating ? 'Calculating...' : 'Calculate Networking Cost' }}
+        </el-button>
+        <el-button 
+          type="success" 
+          :disabled="!results"
+          @click="exportResults"
+        >
+          Export Results
+        </el-button>
+      </div>
+      
+      <!-- Results Table -->
+      <ResultTable :results="results" />
+      
+      <!-- Performance/Cost Chart -->
+      <ResultChart :perf-cost-data="perfCostData" />
     </div>
-    
-    <!-- Results Table -->
-    <ResultTable :results="results" />
-    
-    <!-- Performance/Cost Chart -->
-    <ResultChart :perf-cost-data="perfCostData" />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { ArrowLeft } from '@element-plus/icons-vue'
 import ClusterScale from './ClusterScale.vue'
 import PerformanceTable from './PerformanceTable.vue'
 import CostTable from './CostTable.vue'
@@ -125,6 +139,12 @@ const exportResults = () => {
 </script>
 
 <style scoped>
+.nav-menu {
+  padding: 0 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
