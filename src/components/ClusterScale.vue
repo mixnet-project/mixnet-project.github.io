@@ -1,7 +1,7 @@
 <template>
   <el-card class="cluster-scale">
     <template #header>
-      <h2>Cluster Scale Table</h2>
+      <h2>Training Cluster Setting</h2>
     </template>
     
     <el-table :data="[clusterData]" border>

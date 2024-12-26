@@ -12,7 +12,7 @@
     </el-menu>
 
     <div class="container">
-      <h1>Performance/Cost Calculator - Reconfigurable optical interconnects</h1>
+      <h1>Performance-Cost Calculator</h1>
       
       <!-- Cluster Scale Input -->
       <ClusterScale @update:data="updateClusterData" />
@@ -149,11 +149,38 @@ const exportResults = () => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+h1 {
+  background: linear-gradient(45deg, var(--primary-color), #36cfc9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .button-container {
   margin: 20px 0;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.el-card {
+  margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {
@@ -168,6 +195,10 @@ const exportResults = () => {
   .el-table {
     width: 100%;
     overflow-x: auto;
+  }
+
+  .button-container {
+    flex-direction: column;
   }
 }
 </style> 

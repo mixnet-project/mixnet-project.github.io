@@ -1,12 +1,19 @@
 <template>
   <el-card class="performance-table">
     <template #header>
-      <h2>Performance Table (Normalized Performance)</h2>
+      <h2>Normalized Training Performance</h2>
     </template>
     
     <el-table :data="performanceData" border>
-      <el-table-column prop="type" label="Interconnect" />
+      <el-table-column prop="type" label="Interconnect">
+        <template #default="{ row }">
+          <strong>{{ row.type }}</strong>
+        </template>
+      </el-table-column>
       <el-table-column label="40G">
+        <template #header>
+          <strong>40G</strong>
+        </template>
         <template #default="{ row }">
           <NumberCell 
             v-model="row['40G']"
@@ -17,6 +24,9 @@
         </template>
       </el-table-column>
       <el-table-column label="100G">
+        <template #header>
+          <strong>100G</strong>
+        </template>
         <template #default="{ row }">
           <NumberCell 
             v-model="row['100G']"
@@ -27,6 +37,9 @@
         </template>
       </el-table-column>
       <el-table-column label="200G">
+        <template #header>
+          <strong>200G</strong>
+        </template>
         <template #default="{ row }">
           <NumberCell 
             v-model="row['200G']"
@@ -37,6 +50,9 @@
         </template>
       </el-table-column>
       <el-table-column label="400G">
+        <template #header>
+          <strong>400G</strong>
+        </template>
         <template #default="{ row }">
           <NumberCell 
             v-model="row['400G']"
@@ -48,9 +64,9 @@
       </el-table-column>
     </el-table>
 
-    <div class="button-container">
+    <!-- <div class="button-container">
       <el-button type="primary" @click="addRow">Add Row</el-button>
-    </div>
+    </div> -->
   </el-card>
 </template>
 
