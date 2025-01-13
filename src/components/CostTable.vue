@@ -74,23 +74,18 @@
 import { ref, onMounted } from 'vue'
 import NumberCell from './NumberCell.vue'
 
+// Available bandwidth options
+const bandwidthOptions = [100, 200, 400, 800]
+
+// Default cost data based on cost.json
 const costData = ref([
-  {
-    bandwidth: 40,
-    transceiver: 39,
-    nic: 354,
-    electrical: 144,
-    optical: 520,
-    panel: 100,
-    fiber: 0.3
-  },
   {
     bandwidth: 100,
     transceiver: 99,
     nic: 659,
-    electrical: 187,
-    optical: 520,
-    panel: 100,
+    electrical: 187,  // eth_port from cost.json
+    optical: 520,     // ocs_port from cost.json
+    panel: 100,       // patch_panel_port from cost.json
     fiber: 0.3
   },
   {
@@ -106,7 +101,16 @@ const costData = ref([
     bandwidth: 400,
     transceiver: 659,
     nic: 1499,
-    electrical: 1500,
+    electrical: 1090,
+    optical: 520,
+    panel: 100,
+    fiber: 0.3
+  },
+  {
+    bandwidth: 800,
+    transceiver: 1399,
+    nic: 2248,
+    electrical: 1400,
     optical: 520,
     panel: 100,
     fiber: 0.3
@@ -121,13 +125,13 @@ const emitUpdate = () => {
 
 const addRow = () => {
   costData.value.push({
-    bandwidth: null,
+    bandwidth: 100,  // Default to lowest bandwidth
     transceiver: null,
     nic: null,
     electrical: null,
     optical: null,
     panel: null,
-    fiber: null
+    fiber: 0.3
   })
 }
 
@@ -143,5 +147,9 @@ onMounted(() => {
 
 .button-container {
   margin-top: 16px;
+}
+
+:deep(.el-select) {
+  width: 100%;
 }
 </style>
