@@ -32,8 +32,12 @@ import { ref, onMounted } from 'vue'
 import NumberCell from './NumberCell.vue'
 
 const clusterData = ref({
-  servers: 128,
-  gpusPerServer: 8
+  minServers: 128,
+  maxServers: 4096,
+  step: 128,
+  servers: 1024,
+  gpusPerServer: 8,
+  oversubscription: 1
 })
 
 const emit = defineEmits(['update:data'])
