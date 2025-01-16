@@ -60,7 +60,7 @@ function createAxisConfig({ name, data = null, isValue = false }) {
     name,
     data,
     nameLocation: "middle",
-    nameGap: 65,
+    nameGap: isValue ? 65 : 40,
     nameTextStyle: {
       fontSize: CHART_FONTS.TITLE,
       padding: CHART_STYLES.padding.axis,
@@ -100,12 +100,6 @@ export function createNetworkingCostOption({ series, serverScales }) {
   const baseOption = createBaseChartOption();
   return {
     ...baseOption,
-    // xAxis: createAxisConfig({
-    //   name: 'Number of Servers',
-    //   data: serverScales,
-    //   formatter: value => value.toLocaleString()
-    // }),
-    // plot as number of GPUs
     xAxis: createAxisConfig({
       name: "Number of GPUs",
       data: serverScales.map((scale) => scale * 8),
@@ -118,7 +112,7 @@ export function createNetworkingCostOption({ series, serverScales }) {
     tooltip: {
       ...baseOption.tooltip,
       formatter: function (params) {
-        let result = `Servers: ${params[0].axisValue.toLocaleString()}<br/>`;
+        let result = `Number of GPUs: ${params[0].axisValue.toLocaleString()}<br/>`;
         params.forEach((param) => {
           if (param.value != null) {
             result += `${param.seriesName}: $${param.value.toFixed(2)}M<br/>`;

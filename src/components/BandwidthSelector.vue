@@ -2,16 +2,12 @@
   <div class="bandwidth-selector">
     <div class="selector-label">Select Bandwidth:</div>
     <div class="bandwidth-options">
-      <el-radio-group 
+      <el-radio-group
         :modelValue="modelValue"
         @update:modelValue="$emit('update:modelValue', $event)"
         @change="$emit('change', $event)"
       >
-        <el-radio-button 
-          v-for="bw in bandwidths" 
-          :key="bw" 
-          :label="`${bw}G`"
-        >
+        <el-radio-button v-for="bw in bandwidths" :key="bw" :value="`${bw}G`">
           {{ bw }}G
         </el-radio-button>
       </el-radio-group>
@@ -23,15 +19,15 @@
 defineProps({
   modelValue: {
     type: String,
-    required: true
+    required: true,
   },
   bandwidths: {
     type: Array,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-defineEmits(['update:modelValue', 'change'])
+defineEmits(["update:modelValue", "change"]);
 </script>
 
 <style scoped>
@@ -58,11 +54,11 @@ defineEmits(['update:modelValue', 'change'])
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .bandwidth-options {
     width: 100%;
     overflow-x: auto;
     padding-bottom: 0.5rem;
   }
 }
-</style> 
+</style>

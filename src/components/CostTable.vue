@@ -1,10 +1,12 @@
 <template>
   <el-card class="cost-table">
     <template #header>
-      <h2>Cost of Networking Elements</h2>
-      <p>Default values are from the paper.</p>
+      <div class="header-content">
+        <h2>Cost of Networking Elements</h2>
+        <p>Default values are from the paper.</p>
+      </div>
     </template>
-    
+
     <el-table :data="costData" border>
       <el-table-column label="Link Bandwidth (Gbps)">
         <template #header>
@@ -19,7 +21,10 @@
           <strong>Transceiver cost ($)</strong>
         </template>
         <template #default="{ row }">
-          <NumberCell v-model="row.transceiver" @update:modelValue="emitUpdate" />
+          <NumberCell
+            v-model="row.transceiver"
+            @update:modelValue="emitUpdate"
+          />
         </template>
       </el-table-column>
       <el-table-column label="NIC cost ($)">
@@ -35,7 +40,10 @@
           <strong>Electrical switch port cost ($)</strong>
         </template>
         <template #default="{ row }">
-          <NumberCell v-model="row.electrical" @update:modelValue="emitUpdate" />
+          <NumberCell
+            v-model="row.electrical"
+            @update:modelValue="emitUpdate"
+          />
         </template>
       </el-table-column>
       <el-table-column label="Optical switch port cost ($)">
@@ -59,34 +67,42 @@
           <strong>Optical fiber cost ($ per meter)</strong>
         </template>
         <template #default="{ row }">
-          <NumberCell v-model="row.fiber" :precision="1" @update:modelValue="emitUpdate" />
+          <NumberCell
+            v-model="row.fiber"
+            :precision="1"
+            @update:modelValue="emitUpdate"
+          />
         </template>
       </el-table-column>
     </el-table>
 
     <div class="button-container">
-      <el-button type="primary" @click="addRow">Add Row</el-button>
+      <el-button type="primary" @click="handleSave" :disabled="!hasChanges">
+        Save Changes
+      </el-button>
+      <!-- <el-button type="primary" @click="addRow">Add Row</el-button> -->
     </div>
   </el-card>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import NumberCell from './NumberCell.vue'
+import { ref, onMounted } from "vue";
+import NumberCell from "./NumberCell.vue";
+import { ElMessage } from "element-plus";
 
 // Available bandwidth options
-const bandwidthOptions = [100, 200, 400, 800]
+const bandwidthOptions = [100, 200, 400, 800];
 
 // Default cost data based on cost.json
-const costData = ref([
+const defaultCostData = [
   {
     bandwidth: 100,
     transceiver: 99,
     nic: 659,
-    electrical: 187,  // eth_port from cost.json
-    optical: 520,     // ocs_port from cost.json
-    panel: 100,       // patch_panel_port from cost.json
-    fiber: 0.3
+    electrical: 187,
+    optical: 520,
+    panel: 100,
+    fiber: 0.3,
   },
   {
     bandwidth: 200,
@@ -95,7 +111,7 @@ const costData = ref([
     electrical: 374,
     optical: 520,
     panel: 100,
-    fiber: 0.3
+    fiber: 0.3,
   },
   {
     bandwidth: 400,
@@ -104,7 +120,7 @@ const costData = ref([
     electrical: 1090,
     optical: 520,
     panel: 100,
-    fiber: 0.3
+    fiber: 0.3,
   },
   {
     bandwidth: 800,
@@ -113,31 +129,50 @@ const costData = ref([
     electrical: 1400,
     optical: 520,
     panel: 100,
-    fiber: 0.3
-  }
-])
+    fiber: 0.3,
+  },
+];
 
-const emit = defineEmits(['update:data'])
+const costData = ref([...defaultCostData]);
+const originalData = ref(null);
+const hasChanges = ref(false);
+
+const emit = defineEmits(["update:data"]);
 
 const emitUpdate = () => {
-  emit('update:data', costData.value)
-}
+  hasChanges.value =
+    JSON.stringify(costData.value) !== JSON.stringify(originalData.value);
+  emit("update:data", costData.value);
+};
+
+const handleSave = () => {
+  try {
+    originalData.value = JSON.parse(JSON.stringify(costData.value));
+    hasChanges.value = false;
+    ElMessage.success("Changes saved successfully");
+  } catch (error) {
+    console.error("Failed to save changes:", error);
+    ElMessage.error("Failed to save changes");
+  }
+};
 
 const addRow = () => {
   costData.value.push({
-    bandwidth: 100,  // Default to lowest bandwidth
+    bandwidth: 100,
     transceiver: null,
     nic: null,
     electrical: null,
     optical: null,
     panel: null,
-    fiber: 0.3
-  })
-}
+    fiber: 0.3,
+  });
+  emitUpdate();
+};
 
 onMounted(() => {
-  emitUpdate()
-})
+  originalData.value = JSON.parse(JSON.stringify(costData.value));
+  emitUpdate();
+});
 </script>
 
 <style scoped>
@@ -145,8 +180,32 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header-content h2 {
+  margin: 0;
+}
+
+.header-content p {
+  margin: 0;
+  color: var(--el-text-color-secondary);
+}
+
 .button-container {
   margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .button-container {
+    justify-content: center;
+  }
 }
 
 :deep(.el-select) {

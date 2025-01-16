@@ -3,6 +3,10 @@
     <template #header>
       <div class="header-content">
         <h2>Networking Cost Analysis</h2>
+        <p>
+          We assume <strong>no oversubscription</strong> for the electrical
+          interconnects.
+        </p>
         <div class="control-panel">
           <BandwidthSelector
             v-model="selectedBandwidth"
@@ -32,7 +36,7 @@ import {
   TOPOLOGY_STYLES,
 } from "../config/constants";
 import BandwidthSelector from "./BandwidthSelector.vue";
-import { calculateNetworkingCost } from "../utils/cost";
+import { getCostForBandwidth, costCalculator } from "../utils/cost";
 import { ElMessage } from "element-plus";
 import { createNetworkingCostOption } from "../utils/chartConfig";
 
@@ -53,15 +57,18 @@ const topoTypes = [
 // Add calculating state
 const calculating = ref(false);
 
+// Add state for tracking if calculation has been performed
+const hasCalculated = ref(false);
+
 // Props definition
 const props = defineProps({
   costData: {
     type: Array,
-    required: true,
+    default: () => [],
   },
   clusterData: {
     type: Object,
-    required: true,
+    default: () => ({}),
   },
 });
 
@@ -71,10 +78,33 @@ function initChart() {
     chart.dispose();
   }
   chart = echarts.init(chartContainer.value);
+
+  // Set empty option to show the canvas
+  chart.setOption({
+    grid: {
+      left: "10%",
+      right: "4%",
+      bottom: "15%",
+      top: "15%",
+      containLabel: true,
+    },
+    xAxis: {
+      type: "category",
+      name: "Number of GPUs",
+      nameLocation: "middle",
+      nameGap: 20,
+    },
+    yAxis: {
+      type: "value",
+      name: "Networking Cost (Million $)",
+      nameLocation: "middle",
+      nameGap: 65,
+    },
+  });
 }
 
 function updateChart() {
-  if (!chart || !props.costData || !props.clusterData) return;
+  if (!chart || !props.costData) return;
 
   const series = createSeries();
   const serverScales = generateServerScales();
@@ -99,8 +129,12 @@ function createSeries() {
     lineStyle: {
       width: 2,
       // For TopoOpt, don't show connecting lines
-      type: topo === TOPOLOGY_TYPES.TOPO_OPT ? "none" : "solid",
+      type: "solid",
     },
+    // For TopoOpt, show only symbols without line
+    showSymbol: true,
+    showAllSymbol: true,
+    // connectNulls: topo !== TOPOLOGY_TYPES.TOPO_OPT,
     data: generateCostData(topo),
   }));
 }
@@ -118,37 +152,30 @@ function generateCostData(topology) {
       return null;
     }
 
-    const costResult = calculateNetworkingCost({
-      clusterScaleData: {
-        servers: scale,
-        gpusPerServer: props.clusterData.gpusPerServer,
-        oversubscription: props.clusterData.oversubscription || 1,
-      },
-      costData: props.costData,
-      performanceData: [],
-    });
-
     const bandwidth = parseInt(selectedBandwidth.value);
-    const cost = costResult[topology.toLowerCase()]?.[bandwidth];
+    const costForRate = getCostForBandwidth(bandwidth, props.costData);
+    const cost = costCalculator[topology.toLowerCase()](costForRate, scale);
     return cost ? cost / 1000000 : null;
   });
 }
 
-// Modify the function to handle calculation
+// Modify the calculation function
 async function calculateAndDraw() {
-  if (!props.costData || !props.clusterData) {
+  if (!props.costData) {
     ElMessage.error("Please fill in all required data before calculating");
-    return;
-  }
-
-  if (!props.clusterData.gpusPerServer) {
-    ElMessage.error("Please set the number of GPUs per server");
     return;
   }
 
   try {
     calculating.value = true;
+
+    // Initialize chart if not already done
+    if (!chart) {
+      initChart();
+    }
+
     await updateChart();
+    hasCalculated.value = true;
     ElMessage.success("Calculation completed successfully");
   } catch (error) {
     console.error("Error calculating networking cost:", error);
@@ -158,33 +185,21 @@ async function calculateAndDraw() {
   }
 }
 
-// Remove the automatic chart update on bandwidth change
-watch(
-  [() => props.costData, () => props.clusterData],
-  () => {
-    if (chart) {
-      updateChart();
-    }
-  },
-  { deep: true }
-);
-
-// Lifecycle hooks and watchers
-watch(
-  [
-    () => selectedBandwidth.value,
-    () => props.costData,
-    () => props.clusterData,
-  ],
-  () => updateChart(),
-  { deep: true }
-);
-
+// Initialize empty chart on mount
 onMounted(() => {
   initChart();
-  updateChart();
   window.addEventListener("resize", handleResize);
 });
+
+// Only update on bandwidth change if we've calculated
+watch(
+  () => selectedBandwidth.value,
+  () => {
+    if (chart && props.costData) {
+      updateChart();
+    }
+  }
+);
 
 onUnmounted(() => {
   if (chart) {
@@ -208,7 +223,7 @@ function handleResize() {
 .header-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 
 .header-content h2 {
@@ -216,6 +231,12 @@ function handleResize() {
   color: var(--el-text-color-primary);
   border-bottom: 2px solid var(--el-border-color);
   padding-bottom: 0.5rem;
+}
+
+.header-content p {
+  margin: 0;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 0.5rem;
 }
 
 .chart-container {

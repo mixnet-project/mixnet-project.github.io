@@ -20,7 +20,12 @@ function calculate_fiber_cost(num_fibers, fiber_cost_per_meter) {
   return total_cost;
 }
 
-function calculateFattreeCost(numServers, numNicsPerServer = 8, overSubRatio = 1.0, costForRate) {
+function calculateFattreeCost(
+  costForRate,
+  numServers,
+  numNicsPerServer = 8,
+  overSubRatio = 1.0
+) {
   const total_nics = numServers * numNicsPerServer;
 
   const total_edge_downlink_ports = total_nics;
@@ -28,7 +33,11 @@ function calculateFattreeCost(numServers, numNicsPerServer = 8, overSubRatio = 1
 
   const total_aggr_ports = total_edge_uplink_ports * 2;
   const total_core_ports = total_aggr_ports;
-  const total_switch_ports = total_edge_downlink_ports + total_edge_uplink_ports + total_aggr_ports + total_core_ports;
+  const total_switch_ports =
+    total_edge_downlink_ports +
+    total_edge_uplink_ports +
+    total_aggr_ports +
+    total_core_ports;
   const total_optical_modules = total_switch_ports + total_nics;
   const total_fibers = Math.ceil(total_optical_modules / 2);
 
@@ -41,11 +50,21 @@ function calculateFattreeCost(numServers, numNicsPerServer = 8, overSubRatio = 1
   return totalCost;
 }
 
-function calculateRailOptimizedCost(numServers, numNicsPerServer = 8, overSubRatio = 1.0, costForRate) {
-  return calculateFattreeCost(numServers, numNicsPerServer, overSubRatio, costForRate);
+function calculateRailOptimizedCost(
+  costForRate,
+  numServers,
+  numNicsPerServer = 8,
+  overSubRatio = 1.0
+) {
+  return calculateFattreeCost(
+    costForRate,
+    numServers,
+    numNicsPerServer,
+    overSubRatio
+  );
 }
 
-function calculateTopooptCost(numServers, numNicsPerServer = 8, costForRate) {
+function calculateTopooptCost(costForRate, numServers, numNicsPerServer = 8) {
   const totalNics = numServers * numNicsPerServer;
   const totalTransceivers = totalNics;
   const totalPatchPanelPorts = totalNics;
@@ -54,19 +73,28 @@ function calculateTopooptCost(numServers, numNicsPerServer = 8, costForRate) {
   let totalCost =
     totalNics * parseFloat(costForRate.nic) +
     totalTransceivers * parseFloat(costForRate.transceiver) +
-    totalPatchPanelPorts * parseFloat(costForRate.optical_patch_panel_port);
-  totalCost += calculate_fiber_cost(totalFibers, parseFloat(costForRate.optical_fiber));
+    totalPatchPanelPorts * parseFloat(costForRate.patch_panel_port);
+  totalCost += calculate_fiber_cost(
+    totalFibers,
+    parseFloat(costForRate.optical_fiber)
+  );
 
   return totalCost;
 }
 
-function calculateRailOnlyCost(numServers, numNicsPerServer = 8, overSubRatio = 1.0, costForRate) {
+function calculateRailOnlyCost(
+  costForRate,
+  numServers,
+  numNicsPerServer = 8,
+  overSubRatio = 1.0
+) {
   const total_nics = numServers * numNicsPerServer;
 
   const total_edge_downlink_ports = total_nics;
   const total_edge_uplink_ports = total_edge_downlink_ports * overSubRatio;
   const total_aggr_ports = total_edge_uplink_ports * 2;
-  const total_switch_ports = total_edge_downlink_ports + total_edge_uplink_ports + total_aggr_ports;
+  const total_switch_ports =
+    total_edge_downlink_ports + total_edge_uplink_ports + total_aggr_ports;
   const total_optical_modules = total_switch_ports + total_nics;
   const total_fibers = Math.ceil(total_optical_modules / 2);
 
@@ -79,9 +107,15 @@ function calculateRailOnlyCost(numServers, numNicsPerServer = 8, overSubRatio = 
   return totalCost;
 }
 
-function calculateMixNetCost(numServers, numNicsPerServer = 8, optical_degree = 6, costForRate) {
+function calculateMixNetCost(
+  costForRate,
+  numServers,
+  numNicsPerServer = 8,
+  optical_degree = 6
+) {
   const total_nics = numServers * numNicsPerServer;
-  const eth_edge_switch_downstream_ports = numServers * (numNicsPerServer - optical_degree);
+  const eth_edge_switch_downstream_ports =
+    numServers * (numNicsPerServer - optical_degree);
   const eth_edge_switch_upstream_ports = eth_edge_switch_downstream_ports;
   const eth_agg_switch_ports = eth_edge_switch_upstream_ports * 2;
   const eth_core_switch_ports = eth_agg_switch_ports;
@@ -108,41 +142,51 @@ function calculateMixNetCost(numServers, numNicsPerServer = 8, optical_degree = 
 
 export function calculateNetworkingCost(data) {
   const { clusterScaleData, performanceData, costData } = data;
-  
-  // 检查数据结构是否正确
+
   if (!clusterScaleData || !performanceData || !costData) {
-    console.error('Missing required data');
+    console.error("Missing required data");
     return null;
   }
 
-  // 将 costData 数组转换为原来的对象格式
-  const costDataMap = {};
-  costData.forEach(row => {
-    costDataMap[row.bandwidth] = {
-      transceiver: row.transceiver,
-      nic: row.nic,
-      electrical_switch_port: row.electrical,
-      optical_switch_port: row.optical,
-      optical_patch_panel_port: row.panel,
-      optical_fiber: row.fiber
-    };
-  });
-
   const numServers = clusterScaleData.servers;
   const numNicsPerServer = clusterScaleData.gpusPerServer;
-  const rates = costData.map(row => row.bandwidth.toString());
+  const rates = costData.map((item) => item.bandwidth);
 
   const total_cost = {};
-  
+
   for (let i = 0; i < rates.length; i++) {
     const rate = rates[i];
-    const costForRate = getCostDataForRate(rate, costDataMap);
+    const costForRate = getCostForBandwidth(rate, costData);
 
-    const fattreeCost = calculateFattreeCost(numServers, numNicsPerServer, 1.0, costForRate);
-    const railOptimizedCost = calculateRailOptimizedCost(numServers, numNicsPerServer, 1.0, costForRate);
-    const topooptCost = calculateTopooptCost(numServers, numNicsPerServer, costForRate);
-    const railOnlyCost = calculateRailOnlyCost(numServers, numNicsPerServer, 1.0, costForRate);
-    const mixNetCost = calculateMixNetCost(numServers, numNicsPerServer, 6, costForRate);
+    const fattreeCost = calculateFattreeCost(
+      costForRate,
+      numServers,
+      numNicsPerServer,
+      1.0
+    );
+    const railOptimizedCost = calculateRailOptimizedCost(
+      costForRate,
+      numServers,
+      numNicsPerServer,
+      1.0
+    );
+    const topooptCost = calculateTopooptCost(
+      costForRate,
+      numServers,
+      numNicsPerServer
+    );
+    const railOnlyCost = calculateRailOnlyCost(
+      costForRate,
+      numServers,
+      numNicsPerServer,
+      1.0
+    );
+    const mixNetCost = calculateMixNetCost(
+      costForRate,
+      numServers,
+      numNicsPerServer,
+      6
+    );
 
     if (!total_cost["fat-tree"]) total_cost["fat-tree"] = {};
     if (!total_cost["rail-optimized"]) total_cost["rail-optimized"] = {};
@@ -159,3 +203,30 @@ export function calculateNetworkingCost(data) {
 
   return total_cost;
 }
+
+// Helper function to get cost for specific bandwidth
+export function getCostForBandwidth(bandwidth, costData) {
+  // now this is a list
+  const costs = costData.find((item) => item.bandwidth === bandwidth);
+  if (!costs) {
+    console.error(`No cost data found for bandwidth ${bandwidth}`);
+    return null;
+  }
+  return {
+    transceiver: costs.transceiver,
+    nic: costs.nic,
+    electrical_switch_port: costs.electrical,
+    optical_switch_port: costs.optical,
+    patch_panel_port: costs.panel,
+    optical_fiber: costs.fiber,
+  };
+}
+
+// define a array to store the function to calculate the cost
+export const costCalculator = {
+  "fat-tree": calculateFattreeCost,
+  "rail-optimized": calculateRailOptimizedCost,
+  topoopt: calculateTopooptCost,
+  "rail-only": calculateRailOnlyCost,
+  mixnet: calculateMixNetCost,
+};

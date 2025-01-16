@@ -29,24 +29,13 @@
         @update:data="updatePerformanceData"
       />
 
-      <!-- Action Buttons -->
-      <div class="button-container">
-        <el-button
-          type="primary"
-          :loading="calculating"
-          @click="calculateResults"
-        >
-          {{ calculating ? "Calculating..." : "Calculate Performance/Cost" }}
-        </el-button>
-      </div>
-
       <!-- Performance/Cost Chart -->
       <ResultChart
-        v-if="perfCostData"
-        :perf-data="performanceData"
+        :perf-data="perfTableRef?.perfData"
         :cost-data="costData"
         :cluster-data="clusterData"
         :calculated-results="perfCostData"
+        @update:calculated-results="updatePerfCostData"
       />
     </div>
   </div>
@@ -59,81 +48,36 @@ import ClusterScale from "./ClusterScale.vue";
 import PerformanceTable from "./PerformanceTable.vue";
 import CostTable from "./CostTable.vue";
 import ResultChart from "./ResultChart.vue";
-import { calculatePerfCost } from "../utils/plot";
-import { ElMessage } from "element-plus";
-import { validatePerformanceData, validateCostData } from "../utils/validate";
 import NetworkingCostChart from "./NetworkingCostChart.vue";
 
 // Reactive state for data management
 const clusterData = ref(null);
 const performanceData = ref(null);
 const costData = ref(null);
-const results = ref(null);
 const perfCostData = ref(null);
-const calculating = ref(false);
-const perfData = ref(null);
-
-const selectedBandwidth = ref("400G");
-const selectedModel = ref("Mixtral 8x22B");
-
 const perfTableRef = ref(null);
 
 const updateClusterData = (data) => {
   clusterData.value = data;
-  console.log("Cluster data updated:", data);
 };
 
 const updatePerformanceData = (data) => {
   performanceData.value = data;
-  console.log("Performance data updated:", data);
 };
 
 const updateCostData = (data) => {
   costData.value = data;
-  console.log("Cost data updated:", data);
-};
-
-const calculateResults = async () => {
-  if (!costData.value) {
-    ElMessage.error("Please fill in all required data before calculating");
-    return;
-  }
-
-  try {
-    calculating.value = true;
-
-    // 使用 perfTableRef 中的 perfData
-    const allPerfData = perfTableRef.value.perfData;
-    console.log("All performance data when calculate:", allPerfData);
-
-    // validatePerformanceData(formattedPerfData)
-    validateCostData(costData.value);
-
-    // Calculate results using all performance data
-    perfCostData.value = calculatePerfCost(
-      allPerfData,
-      costData.value,
-      clusterData.value
-    );
-    console.log("Calculated perf/cost data:", perfCostData.value);
-    ElMessage.success("Calculation completed successfully");
-  } catch (error) {
-    console.error("Calculation error:", error);
-    ElMessage({
-      message: error.message,
-      type: "error",
-      duration: 5000,
-      showClose: true,
-    });
-  } finally {
-    calculating.value = false;
-  }
 };
 
 // Function to get available topologies from performance data
 const getAvailableTopologies = () => {
   if (!performanceData.value) return [];
   return performanceData.value.map((row) => row.type);
+};
+
+// Add explicit update function
+const updatePerfCostData = (newData) => {
+  perfCostData.value = newData;
 };
 </script>
 
