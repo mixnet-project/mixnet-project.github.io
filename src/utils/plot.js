@@ -2,6 +2,7 @@ import { calculateNetworkingCost } from "./cost";
 
 // Calculate performance/cost ratio for different models and topologies
 export function calculatePerfCost(performanceData, costData, clusterScaleData) {
+  if (!performanceData || !costData || !clusterScaleData) return [];
   // Get available bandwidths from cost data
   const bandwidths = costData.map((row) => row.bandwidth);
 
@@ -46,8 +47,8 @@ export function calculatePerfCost(performanceData, costData, clusterScaleData) {
       });
     });
   });
-
-  return results;
+  const normalizedResults = normalizeToFattree(results);
+  return normalizedResults;
 }
 
 // Helper function to group performance data by model
@@ -69,4 +70,45 @@ export function getAvailableBandwidths(costData) {
     .sort((a, b) => {
       return parseInt(a) - parseInt(b);
     });
+}
+
+export function normalizeToFattree(originalData) {
+  return Object.entries(originalData).reduce(
+    (modelsAcc, [modelName, topologies]) => {
+      const fattreeValues = topologies["Fat-tree"];
+
+      if (!fattreeValues) {
+        console.warn(
+          `Skipping normalization for ${modelName}: Missing Fat-tree baseline`
+        );
+        return modelsAcc;
+      }
+
+      modelsAcc[modelName] = Object.entries(topologies).reduce(
+        (topoAcc, [topologyName, bandwidthData]) => {
+          topoAcc[topologyName] = Object.entries(bandwidthData).reduce(
+            (bwAcc, [bandwidth, rawValue]) => {
+              const baseline = fattreeValues[bandwidth];
+
+              const normalizedValue =
+                typeof baseline === "number" &&
+                baseline !== 0 &&
+                typeof rawValue === "number"
+                  ? rawValue / baseline
+                  : null;
+
+              bwAcc[bandwidth] = normalizedValue;
+              return bwAcc;
+            },
+            {}
+          );
+          return topoAcc;
+        },
+        {}
+      );
+
+      return modelsAcc;
+    },
+    {}
+  );
 }

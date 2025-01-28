@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>MixNet: Reconfigurable Optical-Electrical Fabric for Mixture-of-Experts Training</h1>
+    <h1>MixNet: A Runtime Reconfigurable Optical-Electrical Fabric for Mixture-of-Experts Training</h1>
 
     <div class="content">
       <section class="intro">
@@ -38,6 +38,7 @@
           <strong>License:</strong> MIT
         </p>
       </section> -->
+      <FeedbackForm />
     </div>
   </div>
 </template>
@@ -45,6 +46,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import FeedbackForm from '@/components/FeedbackForm.vue'
 
 const router = useRouter()
 

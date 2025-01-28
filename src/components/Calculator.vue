@@ -5,7 +5,13 @@
         <el-icon><ArrowLeft /></el-icon>
         Back to Home
       </el-menu-item>
+      <el-menu-item @click="showGuide">
+        <el-icon><QuestionFilled /></el-icon>
+        Usage Guide
+      </el-menu-item>
     </el-menu>
+
+    <CalculatorGuide ref="guide" />
 
     <div class="container">
       <h1>Performance-Cost Calculator</h1>
@@ -43,12 +49,13 @@
 
 <script setup>
 import { ref } from "vue";
-import { ArrowLeft } from "@element-plus/icons-vue";
+import { ArrowLeft, QuestionFilled } from "@element-plus/icons-vue";
 import ClusterScale from "./ClusterScale.vue";
 import PerformanceTable from "./PerformanceTable.vue";
 import CostTable from "./CostTable.vue";
 import ResultChart from "./ResultChart.vue";
 import NetworkingCostChart from "./NetworkingCostChart.vue";
+import CalculatorGuide from "./CalculatorGuide.vue";
 
 // Reactive state for data management
 const clusterData = ref(null);
@@ -56,6 +63,7 @@ const performanceData = ref(null);
 const costData = ref(null);
 const perfCostData = ref(null);
 const perfTableRef = ref(null);
+const guide = ref(null);
 
 const updateClusterData = (data) => {
   clusterData.value = data;
@@ -78,6 +86,10 @@ const getAvailableTopologies = () => {
 // Add explicit update function
 const updatePerfCostData = (newData) => {
   perfCostData.value = newData;
+};
+
+const showGuide = () => {
+  guide.value?.show();
 };
 </script>
 
