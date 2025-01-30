@@ -1,114 +1,138 @@
 <template>
-  <el-card class="feedback-card">
-    <template #header>
-      <div class="header">
-        <h3>Submit Anonymous Feedback</h3>
-        <p>Your comments will help improve this tool</p>
-      </div>
-    </template>
-
-    <el-form :model="form" :rules="rules" ref="formRef">
-      <el-form-item prop="comment">
+  <section class="feedback-section">
+    <div class="section-header">
+      <h2 class="section-title">Anonymous Feedback</h2>
+      <p class="section-description">Your comments will help improve this tool!</p>
+    </div>
+    <el-form 
+      :model="form" 
+      class="feedback-form"
+      label-position="top"
+    >
+      <el-form-item 
+        label="Feedback"
+        class="form-item"
+      >
         <el-input
-          v-model="form.comment"
+          v-model="form.feedback"
           type="textarea"
           :rows="4"
           placeholder="Please share your feedback or suggestions..."
+          resize="none"
         />
       </el-form-item>
 
-      <p>Optional contact email (if you want a reply)</p>
       <el-form-item 
-        label="Email"
-        style="margin-top: 1.5rem"
+        label="Optional Email (if you want a reply)"
+        class="form-item"
       >
         <el-input
-          v-model="form.contact"
+          v-model="form.email"
           type="email"
           placeholder="your.email@example.com"
-        />
+          clearable
+        >
+          <template #prefix>
+            <el-icon><Message /></el-icon>
+          </template>
+        </el-input>
       </el-form-item>
 
       <el-form-item>
-        <el-button
-          type="primary"
+        <el-button 
+          type="primary" 
           @click="submitForm"
-          :loading="submitting"
+          class="submit-btn"
+          size="large"
         >
-          {{ submitting ? 'Submitting...' : 'Submit Feedback' }}
+          <el-icon><Upload /></el-icon>
+          Submit Feedback
         </el-button>
       </el-form-item>
     </el-form>
-  </el-card>
+  </section>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Message, Upload } from '@element-plus/icons-vue'
 
 const form = ref({
-  comment: '',
-  contact: ''
+  feedback: '',
+  email: ''
 })
 
-const formRef = ref(null)
-const submitting = ref(false)
-
-const rules = {
-  comment: [
-    { required: true, message: 'Please input your feedback', trigger: 'blur' },
-    { max: 1000, message: 'Maximum 1000 characters', trigger: 'blur' }
-  ]
-}
-
-async function submitForm() {
+const submitForm = async () => {
   try {
-    await formRef.value.validate()
-    submitting.value = true
-    
     const response = await fetch('https://formspree.io/f/movjeqkp', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        message: form.value.comment,
-        _replyto: form.value.contact || undefined
+        message: form.value.feedback || 'Anonymous feedback',
+        _replyto: form.value.email || undefined
       })
     })
 
     if (response.ok) {
       ElMessage.success('Feedback submitted successfully')
-      form.value.comment = ''
-      form.value.contact = ''
-    } else {
-      throw new Error('Submission failed')
+      form.value.feedback = ''
+      form.value.email = ''
     }
   } catch (error) {
     ElMessage.error('Failed to submit feedback. Please try again later.')
-  } finally {
-    submitting.value = false
   }
 }
 </script>
 
 <style scoped>
-.feedback-card {
-  margin-top: 2rem;
-  max-width: 600px;
+.feedback-section {
+  padding: 40px;
+  background: #f8f9fa;
+  border-radius: 20px;
+  margin: 40px 0;
 }
 
-.header {
+.section-header {
   text-align: center;
+  margin-bottom: 2rem;
 }
 
-.header h3 {
-  margin: 0;
-  color: var(--el-color-primary);
+.section-title {
+  font-size: 1.8rem;
+  color: #2b6cb0;
+  margin-bottom: 0.5rem;
 }
 
-.header p {
-  margin: 0.5rem 0 0;
-  color: var(--el-text-color-secondary);
+.section-description {
+  color: #4a5568;
+  font-size: 1.1rem;
+}
+
+.feedback-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-item {
+  margin-bottom: 1.5rem;
+}
+
+.form-item :deep(.el-form-item__label) {
+  font-weight: 500;
+  color: #2d3748;
+  font-size: 1rem;
+}
+
+.submit-btn {
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 108, 176, 0.2);
 }
 </style> 
