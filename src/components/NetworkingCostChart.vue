@@ -2,7 +2,7 @@
   <el-card class="chart-card">
     <template #header>
       <div class="header-content">
-        <h2>Networking Cost Analysis</h2>
+        <h2>Networking Cost Analysis (Figure 11 in the technical paper)</h2>
         <p>
           We assume <strong>no oversubscription</strong> for the electrical
           interconnects.

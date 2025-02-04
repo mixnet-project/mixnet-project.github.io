@@ -2,7 +2,7 @@
   <el-card class="chart-card">
     <template #header>
       <div class="header-content">
-        <h2>Performance/Cost Analysis: Performance per dollar</h2>
+        <h2>Performance/Cost Analysis: Performance per dollar (Figure 13 in the technical paper)</h2>
         <div class="control-panel">
           <BandwidthSelector
             v-model="selectedBandwidth"
