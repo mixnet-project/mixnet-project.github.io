@@ -12,6 +12,11 @@ const routes = [
     path: '/calculator',
     name: 'Calculator',
     component: Calculator
+  },
+  {
+    path: '/network',
+    name: 'Network',
+    component: () => import('@/components/NetworkView.vue')
   }
 ]
 

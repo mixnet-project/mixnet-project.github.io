@@ -2,6 +2,10 @@
   <div class="home">
     <header class="hero">
       <div class="hero-content">
+        <div class="paper-badge">
+          <span class="badge-icon">🎉</span>
+          <span class="badge-text">Published at ACM SIGCOMM 2025</span>
+        </div>
         <h1 class="hero-title">
           <span class="gradient-text">MixNet</span>
           <span class="hero-subtitle"
@@ -10,17 +14,33 @@
           >
         </h1>
         <div class="hero-actions">
-          <!-- <el-button type="primary" size="large" @click="$router.push('/network')">
+          <el-button
+            type="danger"
+            size="large"
+            @click="openLink('https://doi.org/10.1145/3718958.3750465')"
+          >
+            <el-icon><Document /></el-icon>
+            Read Paper
+          </el-button>
+          <el-button
+            type="primary"
+            size="large"
+            @click="$router.push('/network')"
+          >
             <el-icon><VideoPlay /></el-icon>
             View Topology
-          </el-button> -->
+          </el-button>
           <el-button type="success" size="large" @click="goToCalculator">
             <el-icon><DataAnalysis /></el-icon>
-            Cost-efficiency Calculator
+            Cost Calculator
           </el-button>
-          <el-button type="info" size="large" @click="goToGithub">
-            <el-icon><Collection /></el-icon>
-            View Code on GitHub
+          <el-button
+            type="info"
+            size="large"
+            @click="openLink('https://github.com/mixnet-project/mixnet-sim')"
+          >
+            <el-icon><FolderOpened /></el-icon>
+            Simulation Code
           </el-button>
         </div>
       </div>
@@ -82,38 +102,76 @@
         </div>
       </section>
 
-      <div class="promo-container">
-        <section class="calculator-promo">
-          <div class="promo-content">
-            <div class="promo-text">
-              <h2>Explore Cost Efficiency</h2>
-              <ul>
-                <li>Compare networking cost of different interconnects</li>
-                <li>Analyze the performance per dollar</li>
-                <li>Visualize the results with interactive dashboard</li>
-              </ul>
-              <el-button type="primary" size="large" @click="goToCalculator">
-                Launch Calculator →
+      <section class="calculator-promo">
+        <div class="promo-content">
+          <div class="promo-header">
+            <span class="promo-icon">💰</span>
+            <h2>Explore Cost Efficiency</h2>
+          </div>
+          <p class="promo-subtitle">Interactive analysis tools for network infrastructure</p>
+          <div class="features-cards">
+            <div class="feature-card">
+              <div class="card-icon">📊</div>
+              <h3>Compare Costs</h3>
+              <p>Analyze networking cost across different interconnect architectures</p>
+            </div>
+            <div class="feature-card">
+              <div class="card-icon">⚡</div>
+              <h3>Performance Analysis</h3>
+              <p>Calculate and compare performance per dollar metrics</p>
+            </div>
+            <div class="feature-card">
+              <div class="card-icon">📈</div>
+              <h3>Interactive Dashboard</h3>
+              <p>Visualize results with dynamic charts and graphs</p>
+            </div>
+          </div>
+          <el-button type="primary" size="large" @click="goToCalculator" class="launch-btn">
+            <el-icon><DataAnalysis /></el-icon>
+            Launch Calculator
+          </el-button>
+        </div>
+      </section>
+
+      <section class="mixnet-paper">
+        <div class="paper-highlight">
+          <div class="paper-content">
+            <h3 class="paper-title">
+              <span class="paper-icon">📄</span>
+              MixNet: A Runtime Reconfigurable Optical-Electrical Fabric for
+              Distributed Mixture-of-Experts Training
+            </h3>
+            <p class="paper-authors">
+              Xudong Liao, Yijun Sun, Han Tian, Xinchen Wan, Yilun Jin, Zilong
+              Wang, Zhenghang Ren, Xinyang Huang, Wenxue Li, Kin Fai Tse,
+              Zhizhen Zhong, Guyue Liu, Ying Zhang, Xiaofeng Ye, Yiming Zhang,
+              Kai Chen
+            </p>
+            <p class="paper-venue">
+              <span class="venue-name">ACM SIGCOMM 2025</span>
+              <span class="venue-pages">pp. 554–574</span>
+            </p>
+            <div class="paper-links">
+              <el-button
+                type="primary"
+                @click="openLink('https://doi.org/10.1145/3718958.3750465')"
+              >
+                <el-icon><Document /></el-icon>
+                Paper (DOI)
+              </el-button>
+              <el-button
+                type="success"
+                @click="
+                  openLink('https://github.com/mixnet-project/mixnet-sim')
+                "
+              >
+                <el-icon><FolderOpened /></el-icon>
+                Simulation Code
               </el-button>
             </div>
-            <div class="promo-visual">
-              <!-- <img src="@/assets/calculator-preview.svg" alt="Calculator Preview"> -->
-            </div>
           </div>
-        </section>
-
-        <section class="github-cta">
-          <div class="cta-content">
-            <!-- <el-icon class="cta-icon"><Star /></el-icon> -->
-            <h3>Get Started</h3>
-            <!-- <p>Join our community to shape the future of AI infrastructure</p> -->
-            <el-button type="info" size="large" @click="goToGithub">
-              <el-icon><Collection /></el-icon>
-              View Code on GitHub
-            </el-button>
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       <section class="references">
         <div class="section-header">
@@ -156,9 +214,9 @@ import { ElMessage } from "element-plus";
 import {
   VideoPlay,
   DataAnalysis,
-  Star,
-  Collection,
   Link,
+  Document,
+  FolderOpened,
 } from "@element-plus/icons-vue";
 import FeedbackForm from "@/components/FeedbackForm.vue";
 
@@ -166,15 +224,6 @@ const router = useRouter();
 
 const goToCalculator = () => {
   router.push("/calculator");
-};
-
-const goToGithub = () => {
-  ElMessage({
-    message: "Code will be available at the time of publication.",
-    type: "info",
-    duration: 3000,
-    showClose: true,
-  });
 };
 
 const references = [
@@ -242,6 +291,37 @@ const openLink = (url) => {
   margin: 0 auto;
 }
 
+.paper-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 24px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.badge-icon {
+  font-size: 1.2rem;
+}
+
+.badge-text {
+  font-size: 0.95rem;
+}
+
 .hero-title {
   font-size: 3.5rem;
   margin-bottom: 1.5rem;
@@ -250,6 +330,7 @@ const openLink = (url) => {
 
 .gradient-text {
   background: linear-gradient(45deg, #2b6cb0, #4299e1);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -292,72 +373,231 @@ const openLink = (url) => {
   font-size: 1.1rem;
 }
 
-.promo-container {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 30px;
+.calculator-promo {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 60px 40px;
   margin: 40px 0;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
-.calculator-promo,
-.github-cta {
+.calculator-promo::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(66, 153, 225, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.promo-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.promo-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 40px;
-  min-height: 250px;
-}
-
-.calculator-promo {
-  background: #f8f9fa;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-
-.github-cta {
-  background: linear-gradient(135deg, #ced4d4 0%, #9dbcd5 100%);
-  border-radius: 20px;
-  color: white;
-}
-
-.promo-content,
-.cta-content {
-  width: 100%;
-  max-width: 400px;
-}
-
-.calculator-promo .el-button,
-.github-cta .el-button {
-  width: 200px;
-  margin-top: 1.5rem;
-}
-
-.promo-text h2,
-.cta-content h3 {
+  gap: 1rem;
   margin-bottom: 1rem;
-  font-size: 1.5rem;
 }
 
-.promo-visual {
-  flex: 1;
-  min-width: 400px;
+.promo-icon {
+  font-size: 2.5rem;
 }
 
-.promo-visual img {
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+.promo-header h2 {
+  font-size: 2rem;
+  color: #2d3748;
+  margin: 0;
 }
 
-.cta-icon {
-  font-size: 3rem;
-  color: #fff;
+.promo-subtitle {
+  color: #4a5568;
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem;
+  opacity: 0.9;
+}
+
+.features-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+  font-size: 1.2rem;
+  color: #2d3748;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.launch-btn {
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+}
+
+.launch-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(66, 153, 225, 0.4);
+}
+
+.mixnet-paper {
+  margin: 60px 0 40px;
+}
+
+.paper-highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 40px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.paper-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.paper-icon {
+  font-size: 2rem;
+  margin-right: 0.5rem;
+}
+
+.paper-title {
+  font-size: 1.6rem;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.paper-authors {
+  font-size: 1rem;
+  opacity: 0.95;
+  margin-bottom: 0.8rem;
+  line-height: 1.6;
+}
+
+.paper-venue {
+  display: flex;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.venue-name {
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.venue-pages {
+  opacity: 0.9;
+  display: inline-flex;
+  align-items: center;
+}
+
+.paper-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.paper-links .el-button {
+  background: white;
+  color: #667eea;
+  border: none;
+  font-weight: 600;
+}
+
+.paper-links .el-button:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
+  .paper-badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .paper-highlight {
+    padding: 30px 20px;
+  }
+
+  .paper-title {
+    font-size: 1.3rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .paper-icon {
+    margin-bottom: 0.5rem;
+  }
+
+  .paper-authors {
+    font-size: 0.9rem;
+  }
+
+  .paper-venue {
+    font-size: 0.95rem;
+    gap: 0.8rem;
+  }
+
+  .venue-name {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .venue-pages {
+    font-size: 0.9rem;
+  }
+
   .hero {
     padding: 40px 20px;
   }
@@ -366,18 +606,70 @@ const openLink = (url) => {
     font-size: 2.5rem;
   }
 
-  .promo-container {
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+    align-items: stretch;
+    padding: 0 10px;
+  }
+
+  .hero-actions .el-button {
+    width: 100%;
+    margin: 0;
+    justify-content: center;
+  }
+
+  .calculator-promo {
+    padding: 40px 20px;
+  }
+
+  .promo-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .promo-icon {
+    font-size: 2rem;
+  }
+
+  .promo-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .promo-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .features-cards {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
-  .calculator-promo,
-  .github-cta {
-    min-height: 100px;
-    padding: 20px 20px;
+  .feature-card {
+    padding: 1.5rem;
   }
 
-  .promo-visual {
-    min-width: auto;
+  .card-icon {
+    font-size: 2rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .feature-card p {
+    font-size: 0.9rem;
+  }
+
+  .launch-btn {
+    width: 100%;
+    font-size: 1rem;
   }
 }
 
